@@ -66,10 +66,20 @@ export function DynamicTree({ streakDays, health = 0 }: { streakDays: number; he
 
   const treeElements = useMemo(() => {
      const elements: React.ReactNode[] = [];
-     const maxDepth = Math.min(6, Math.ceil(day * 0.9));
+     const maxDepth = day === 0 ? 0 : Math.min(6, Math.ceil(day * 0.9));
      
      const centerX = 200;
      const bottomY = 320;
+
+     if (day === 0) {
+        elements.push(
+          <g key="seed" transform={`translate(${centerX}, ${bottomY})`}>
+            <circle r="4" fill="#5c290b" filter="url(#glow)" />
+            <path d="M-2 -2 Q0 -8 2 -2" fill="none" stroke="#10b981" strokeWidth="1.5" />
+          </g>
+        );
+        return elements;
+     }
 
      const drawBranch = (x: number, y: number, length: number, angle: number, depth: number, path: string): void => {
         if (depth > maxDepth) return;

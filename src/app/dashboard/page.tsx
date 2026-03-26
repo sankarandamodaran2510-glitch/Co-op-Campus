@@ -19,7 +19,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import MilestoneModal from "@/components/MilestoneModal";
-import MilestoneModal from "@/components/MilestoneModal";
+import GiftsModal from "@/components/GiftsModal";
 
 // Initial Mock Data
 const MOCK_DATA = {
@@ -78,7 +78,7 @@ export default function DashboardPage() {
   const [squadName, setSquadName] = useState("Byte Planters");
   const [streakDays, setStreakDays] = useState(0);
   const [showMilestone, setShowMilestone] = useState(false);
-  const [showMilestone, setShowMilestone] = useState(false);
+  const [showGifts, setShowGifts] = useState(false);
 
   // Initialize
   useEffect(() => {
@@ -156,6 +156,27 @@ export default function DashboardPage() {
     const userHabitProgress = habits.length > 0 ? (completedTasks.size / habits.length) : 0;
     return Math.min(100, Math.round(othersScore + (userHabitProgress * userWeight)));
   })();
+
+  // Sync Activity Logic
+  const handleSync = () => {
+    if (streakDays >= 7) {
+      setShowGifts(true);
+      setStreakDays(0);
+      localStorage.setItem("streak_days_passed", JSON.stringify([]));
+      // Increment garden harvested count
+      const harvested = parseInt(localStorage.getItem("harvested_trees") || "0") + 1;
+      localStorage.setItem("harvested_trees", harvested.toString());
+      toast.success("🌳 Tree harvested! New seed planted.");
+    } else {
+      const next = streakDays + 1;
+      setStreakDays(next);
+      const rawDays = localStorage.getItem("streak_days_passed");
+      let daysPassed: string[] = rawDays ? JSON.parse(rawDays) : [];
+      daysPassed.push(new Date().toDateString() + Math.random().toString()); // Add random bit to distinguish demo clicks
+      localStorage.setItem("streak_days_passed", JSON.stringify(daysPassed));
+      toast.success(`✨ Sync complete! Tree evolved to Day ${next}.`);
+    }
+  };
 
   // Task Toggle
   const toggleTask = (habitId: string) => {
@@ -256,7 +277,18 @@ export default function DashboardPage() {
           
           {/* Cinematic Tree Area */}
           <section className="lg:col-span-7 bg-zinc-900/20 border border-zinc-900 rounded-[3rem] p-12 relative overflow-hidden flex flex-col items-center">
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_120%,rgba(16,185,129,0.08)_0%,transparent_60%)] pointer-events-none" />
+            <div className="w-full flex justify-between items-center mb-10 px-6">
+               <div className="flex items-center gap-2">
+                  <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping shadow-[0_0_10px_rgba(16,185,129,0.5)]"></div>
+                  <span className="text-[10px] font-black uppercase tracking-widest text-emerald-500">Sync Activity: Active</span>
+               </div>
+               <button 
+                onClick={handleSync}
+                className="bg-zinc-950 border border-zinc-900 px-6 py-2.5 rounded-2xl text-[10px] font-black uppercase tracking-widest text-white hover:bg-emerald-500 hover:text-black hover:border-emerald-500 transition-all shadow-xl"
+               >
+                 Sync Activity
+               </button>
+            </div>
             
             <DynamicTree streakDays={streakDays} health={liveHealthScore} />
 
@@ -355,15 +387,7 @@ export default function DashboardPage() {
           icon: "🌟"
         }}
       />
-      <MilestoneModal 
-        isOpen={showMilestone} 
-        onClose={() => setShowMilestone(false)}
-        milestone={{
-          title: "7-Day Legend Status",
-          reward: "Golden Tree Badge & 1000 Campus Points",
-          icon: "🌟"
-        }}
-      />
+      <GiftsModal isOpen={showGifts} onClose={() => setShowGifts(false)} />
       <style jsx global>{`
         .custom-scrollbar::-webkit-scrollbar { width: 4px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
