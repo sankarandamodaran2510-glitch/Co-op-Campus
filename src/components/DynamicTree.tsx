@@ -37,23 +37,18 @@ function Particle({ x, y, delay, size, color }: ParticleProps) {
 export function DynamicTree({ streakDays, health = 0 }: { streakDays: number; health?: number }) {
   const [particles, setParticles] = useState<ParticleProps[]>([]);
   
-  const initialStage = Math.min(7, Math.max(1, streakDays));
+  const initialStage = Math.min(7, Math.max(0, streakDays));
   const [activeDay, setActiveDay] = useState(initialStage);
   
-  // Sync with prop changes
-  useEffect(() => {
-    setActiveDay(initialStage);
-  }, [initialStage]);
-
-  const isLegendary = activeDay >= 7;
-  const day = activeDay;
+  const isLegendary = streakDays >= 7;
+  const day = streakDays; // Tree reflects actual progress regardless of selection
 
   // Daily Maturity effects
   const maturity = health / 100;
   const leafOpacity = 0.4 + (maturity * 0.4);
 
   useEffect(() => {
-    const particleCount = (activeDay * 2) + Math.floor(maturity * 10);
+    const particleCount = (streakDays * 2) + Math.floor(maturity * 10);
     const pts = Array.from({ length: particleCount }, (_, i) => ({
       x: 150 + Math.random() * 100,
       y: 150 + Math.random() * 150,
@@ -62,7 +57,7 @@ export function DynamicTree({ streakDays, health = 0 }: { streakDays: number; he
       color: isLegendary ? "#fbbf24" : "#34d399",
     }));
     setParticles(pts);
-  }, [activeDay, maturity, isLegendary]);
+  }, [streakDays, maturity, isLegendary]);
 
   const treeElements = useMemo(() => {
      const elements: React.ReactNode[] = [];
@@ -215,7 +210,7 @@ export function DynamicTree({ streakDays, health = 0 }: { streakDays: number; he
       <div className="relative w-full max-w-[320px] aspect-square flex items-center justify-center">
         <AnimatePresence mode="wait">
           <motion.svg
-            key={activeDay}
+            key={streakDays}
             viewBox="0 0 400 400"
             className="w-full h-full drop-shadow-2xl"
             initial={{ opacity: 0, scale: 0.9, rotate: -3 }}

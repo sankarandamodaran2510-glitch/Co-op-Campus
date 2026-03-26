@@ -1,7 +1,10 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  // @ts-ignore
+  turbopack: {
+    root: "E:\\hackathon\\Co-op-Campus",
+  },
 };
 
 export default nextConfig;

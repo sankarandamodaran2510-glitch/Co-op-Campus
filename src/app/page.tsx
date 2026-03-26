@@ -241,22 +241,6 @@ export default function LandingPage() {
                 Sign in with GitHub
               </Button>
 
-              <form onSubmit={handleLeetCodeLogin} className="pt-4 mt-4 border-t border-zinc-800 space-y-3">
-                <Input
-                  type="text"
-                  placeholder="LeetCode Username"
-                  value={leetcodeUsername}
-                  onChange={(e) => setLeetcodeUsername(e.target.value)}
-                  className="h-11 bg-zinc-950 border-zinc-800 text-white placeholder:text-zinc-600 focus-visible:ring-emerald-500"
-                />
-                <Button
-                  type="submit"
-                  disabled={isLoading || !leetcodeUsername}
-                  className="w-full h-11 bg-[#FFA116] hover:bg-[#ffb347] text-black border-0 font-semibold transition-colors"
-                >
-                  Sign in with LeetCode
-                </Button>
-              </form>
 
             </Tabs>
           </div>
